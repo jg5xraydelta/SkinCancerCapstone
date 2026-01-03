@@ -1,4 +1,5 @@
 *.jpg
+*.h5
 *.keras
 awsEcr.txt
 tfserving/skin-cancer-model/
@@ -212,3 +213,10 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Large model files
+*.keras
+*.onnx
+awscliv2.zip
+*/variables.data-00000-of-00001
+*_savedmodel/
