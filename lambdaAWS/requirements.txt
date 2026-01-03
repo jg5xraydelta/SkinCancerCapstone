@@ -1,0 +1,4 @@
+onnxruntime==1.16.3
+numpy==1.26.4
+pillow==10.4.0
+keras-image-helper==0.0.1
