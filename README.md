@@ -25,7 +25,7 @@ The ResNet_v4_large_15_0.906.hf is my highest accuracy model.  It is the model f
 
 Deployment: The model was deployed locally, lambdaAWS, and kubernetes.
 
-(1) The kubernetes deployment was carried out in a seperate github/codespace. Some of the files needed for the tf-serving component of that deployment are in the /tfserving directory. See (https://github.com/DataTalksClub/machine-learning-zoomcamp/blob/master/10-kubernetes/07-kubernetes-tf-serving.md) for additional instructions.
+(1) The kubernetes deployment was carried out in a seperate github/codespace. Some of the files needed for the tf-serving component of that deployment are in the /tfserving directory. Most of the deployment is carried in the terminal.  See (https://github.com/alexeygrigorev/workshops/tree/main/mlzoomcamp-k8s) & (https://github.com/DataTalksClub/machine-learning-zoomcamp/blob/master/10-kubernetes/07-kubernetes-tf-serving.md) for additional instructions.
 
 (2) I believe there was a dockerfile similar to the one in /lambdaAWS.  It was used to deploy locally and the test.py script will send a request.  However, that dockerfile morphed into the dockerfile that is there now & the one needed for AWSlambda.
 

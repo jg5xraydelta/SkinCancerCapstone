@@ -1,3 +1,5 @@
+docker build -t skin-cancer-model:v1 .
+
 docker run -it --rm -p 8500:8500 -v "./skin-cancer-saved-model:/models/skin-cancer-model/1" -e MODEL_NAME="skin-cancer
 -model" -t tensorflow/serving:2.7.0
 
