@@ -1,0 +1,43 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Upgrade pip
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install latest TensorFlow and dependencies
+RUN pip install --no-cache-dir \
+    tensorflow>=2.17.0 \
+    h5py>=3.11.0 \
+    numpy>=1.26.0
+
+# Copy the conversion script
+COPY convert_h5_model.py /app/convert_h5_model.py
+
+# Make the script executable
+RUN chmod +x /app/convert_h5_model.py
+
+# Create a directory for models
+RUN mkdir -p /models
+
+# Set the working directory to /models for convenience
+WORKDIR /models
+
+# Set the entrypoint
+ENTRYPOINT ["python", "/app/convert_h5_model.py"]
+
+# Default command shows help
+CMD ["--help"]

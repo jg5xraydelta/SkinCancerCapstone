@@ -1,0 +1,52 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Upgrade pip
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install everything in one go to avoid dependency conflicts
+RUN pip install --no-cache-dir \
+    tensorflow==2.18.0 \
+    numpy==1.26.4 \
+    protobuf==4.25.5 \
+    h5py==3.12.1 \
+    onnx==1.17.0 \
+    onnxruntime==1.20.1
+
+# Install tf2onnx from GitHub for latest fixes
+RUN pip install --no-cache-dir git+https://github.com/onnx/tensorflow-onnx.git
+
+# Note: keras2onnx is deprecated and incompatible with TF 2.18+, removed
+
+# Copy the conversion script
+COPY convert_keras_to_onnx.py /app/convert_keras_to_onnx.py
+
+# Make the script executable
+RUN chmod +x /app/convert_keras_to_onnx.py
+
+# Create a directory for models
+RUN mkdir -p /models
+
+# Set the working directory to /models for convenience
+WORKDIR /models
+
+# Set the entrypoint
+ENTRYPOINT ["python", "/app/convert_keras_to_onnx.py"]
+
+# Default command shows help
+CMD ["--help"]
