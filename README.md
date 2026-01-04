@@ -1,10 +1,17 @@
+Essential Instruction URLs:
+https://github.com/DataTalksClub/machine-learning-zoomcamp/tree/master/09-serverless/workshop
+
+https://github.com/alexeygrigorev/workshops/tree/main/mlzoomcamp-k8s
+
+
+
 Tech Notes:
-I used codespace for this project.  There is a devcontainer.json folder & file that has the added Docker-in-Docker feature.  Codespace runs on docker.  I think if you launch a new codespace using this github(https://github.com/jg5xraydelta/SkinCancerCapstone), then it will use it automatically.  If docker --version doesn't work, then maybe rebuild the codespace.
+I used codespace for this project.  There is a devcontainer.json folder & file that has the added Docker-in-Docker feature.  Codespace runs on docker.  I think if you launch a new codespace using this github(https://github.com/jg5xraydelta/SkinCancerCapstone), then it will look for the devcontainer file automatically.  If docker --version doesn't work, then maybe rebuild the codespace.
 
 The root folder is /workspaces/SkinCancerCapstone.  Once the codespace is built.  You should uv sync.  That should set up the appropriate virtual environment.  
 
 Git and Git LFS gave me fits throughout the project.  The data contains images and I wanted to push them once.  I pushed them and then downloaded git lfs.  There is a file called .gitattributes where large files are listed and git lfs will track and store them differently.  Github doesn't like files over 100MB.
-The reason I think I had so much trouble is because once I pushed them, git in-a-sense wouldn't forget them despite git lfs and .gitattributes.  I had to unstage the file and remove it from repo tracking.  Afterwards, commit and a push cleared up my git issues.  Model files are large to and they are listed in .gitattributes.
+The reason I think I had so much trouble is because once I pushed them, git in-a-sense wouldn't forget them despite git lfs and .gitattributes.  I had to unstage the file and remove it from repo tracking.  Afterwards, commit and a push cleared up my git issues.  Model files are large too and they are listed in .gitattributes.
 
 Conversions were my greatest struggle during this project.  I used claude.ai extensively.  Finally generated the dockerfile and the python script for each conversion.  When running the file conversion dockerfiles, my codespace ran out of space quickly.  The command below ultimately fixed the issue.
 
@@ -12,30 +19,64 @@ $ docker system prune -a --volumes -f
 
 The model-conversion directory contains the dockerfile needed to convert h5 to keras or saved-model.  If you want Onnx format, then you need to take the keras model to the /to_Onnx/models directory and use the dockerimage in the /to_Onnx directory.
 
-There is a kaggle notebook where I ran some more epochs and I could get access to gpus.  Surprisingly, I didn't get a higher accuracy than the models I ran in codespace on cpus.  Kaggle/Code was 10x faster though.  I have only included the notebook i used in Kaggle with mostly changes to the filepath to the data.  I uploaded the data folder to kaggle and named it skin-dataset.  That folder can be found in /kaggle/input folder.
+There is a kaggle notebook where I ran some more epochs and I could get access to gpus.  Surprisingly, I didn't get a higher accuracy than the models I ran in codespace on cpus.  Kaggle/Code was 10x faster though.  I have only included the notebook i used in Kaggle with mostly changes to the filepath to the data.  I uploaded the data folder to kaggle and named it skin-dataset.  That folder can be found in /kaggle/input directory once inside a kaggle notebook.
+
+The ResNet_v4_large_15_0.906.hf is my highest accuracy model.  It is the model file used in the conversion folders.  
+
+Deployment: The model was deployed locally, lambdaAWS, and kubernetes.
+
+(1) The kubernetes deployment was carried out in a seperate github/codespace. Some of the files needed for the tf-serving component of that deployment are in the /tfserving directory. See (https://github.com/DataTalksClub/machine-learning-zoomcamp/blob/master/10-kubernetes/07-kubernetes-tf-serving.md) for additional instructions.
+
+(2) I believe there was a dockerfile similar to the one in /lambdaAWS.  It was used to deploy locally and the test.py script will send a request.  However, that dockerfile morphed into the dockerfile that is there now & the one needed for AWSlambda.
+
+(3) So AWSlambda was tricky for me.  I'm pretty sure the files lambda_function.py, requirements.txt, and sc-model.onnx are what is needed.  An ecr repository has to be created and that is where a docker image will be pushed(see example below).    
+
+I replaced: (you may pick a different 'my-app' name)
+'my-app' with 'scmodelonnx'
+'123456789012' with my AWS console ID
+'us-east-1' with my region
+
+''' 
+# 1. Authenticate
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+
+# 2. Create repository (if needed)
+aws ecr create-repository --repository-name my-app --region us-east-1
+
+# 3. Tag your image
+docker tag my-app:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+
+# 4. Push to ECR
+docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+'''
+
+Next, you will create a lambda function using a container image.  Then a popup box appears and you will select the container image in your ecr repo.
+After your lambda function is created, you can test it with the url below.  
+
+URL USED FOR TESTING: "url": "https://github.com/jg5xraydelta/SkinCancerCapstone/blob/main/data/test/malignant/1.jpg?raw=true"
+
+Finally, to actual deploy the lambda function as a webservice, you'll need to 
+create an API Gateway that exposes the Lambda Function.  For more detailed instructions, see (https://www.youtube.com/watch?v=wyZ9aqQOXvs&list=PL3MmuxUbc_hIhxl5Ji8t4O6lPAOpHaCLR).
 
 
 
 
+*********************************SkinCancerCapstone***********************************
+Problem Statement:
+Malignant or benign—this is the question that billions of men and women face each year when a new spot appears on their skin due to aging or sun exposure. While a biopsy remains the gold standard for determining whether a spot is cancerous and should be removed, dermatologists possess a keen eye and extensive experience in visually inspecting lesions and assessing their severity with very high accuracy. However, convolutional neural networks can achieve comparable accuracy and serve populations that lack access to highly trained dermatologists. Therefore, a skin cancer image classification model can address the problem of limited access to healthcare professionals and provide early detection and healthcare cost savings to patients.
 
-
-
-
-
-
-
-# SkinCancerCapstone
-Malignant or Benign
 
 # Skin Cancer Classification: Malignant or Benign
 
 A deep learning project for binary classification of skin lesions as malignant or benign using convolutional neural networks and transfer learning.
 
-## 📋 Project Overview
+## 📋 Project Overview (train and test only i.e. no validation)
 
 This project implements a ResNet50-based deep learning model to classify skin lesion images into two categories:
 - **Malignant** - Cancerous lesions
 - **Benign** - Non-cancerous lesions
+
+data url: https://www.kaggle.com/datasets/fanconic/skin-cancer-malignant-vs-benign
 
 The model achieves **90.6% accuracy** on the test set, demonstrating strong performance in distinguishing between malignant and benign skin lesions.
 
