@@ -1,3 +1,29 @@
+Tech Notes:
+I used codespace for this project.  There is a devcontainer.json folder & file that has the added Docker-in-Docker feature.  Codespace runs on docker.  I think if you launch a new codespace using this github(https://github.com/jg5xraydelta/SkinCancerCapstone), then it will use it automatically.  If docker --version doesn't work, then maybe rebuild the codespace.
+
+The root folder is /workspaces/SkinCancerCapstone.  Once the codespace is built.  You should uv sync.  That should set up the appropriate virtual environment.  
+
+Git and Git LFS gave me fits throughout the project.  The data contains images and I wanted to push them once.  I pushed them and then downloaded git lfs.  There is a file called .gitattributes where large files are listed and git lfs will track and store them differently.  Github doesn't like files over 100MB.
+The reason I think I had so much trouble is because once I pushed them, git in-a-sense wouldn't forget them despite git lfs and .gitattributes.  I had to unstage the file and remove it from repo tracking.  Afterwards, commit and a push cleared up my git issues.  Model files are large to and they are listed in .gitattributes.
+
+Conversions were my greatest struggle during this project.  I used claude.ai extensively.  Finally generated the dockerfile and the python script for each conversion.  When running the file conversion dockerfiles, my codespace ran out of space quickly.  The command below ultimately fixed the issue.
+
+$ docker system prune -a --volumes -f 
+
+The model-conversion directory contains the dockerfile needed to convert h5 to keras or saved-model.  If you want Onnx format, then you need to take the keras model to the /to_Onnx/models directory and use the dockerimage in the /to_Onnx directory.
+
+There is a kaggle notebook where I ran some more epochs and I could get access to gpus.  Surprisingly, I didn't get a higher accuracy than the models I ran in codespace on cpus.  Kaggle/Code was 10x faster though.  I have only included the notebook i used in Kaggle with mostly changes to the filepath to the data.  I uploaded the data folder to kaggle and named it skin-dataset.  That folder can be found in /kaggle/input folder.
+
+
+
+
+
+
+
+
+
+
+
 # SkinCancerCapstone
 Malignant or Benign
 
