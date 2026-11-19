@@ -1,0 +1,24 @@
+{
+  "title": "SkinCancerCapstone: Transfer-learning classifier for malignant vs. benign dermoscopic skin lesions (v5, leak-free evaluation)",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Gavin, Jared",
+      "affiliation": "University of Arkansas at Monticello"
+    }
+  ],
+  "description": "<p>Code and model for a binary classifier (malignant vs. benign) of dermoscopic skin-lesion images, using a frozen ImageNet ResNet50 and a small trained classification head.</p><p><strong>Data.</strong> Kaggle \"Skin Cancer: Malignant vs. Benign\" (ISIC-derived): 2,637 training and 660 test images at 224x224. A perceptual-hash search with visual confirmation found 24 test images that duplicate a training lesion; they were excluded, leaving 636 test images.</p><p><strong>Method.</strong> Learning rate, dropout and number of epochs were chosen by 5-fold stratified group cross-validation on training data only (near-duplicate lesions kept within one fold). The chosen model (learning rate 0.001, dropout 0.2, 26 epochs) was retrained on all training data and scored on the test set once.</p><p><strong>Results.</strong> Test accuracy 89.8% (95% CI 87.4-92.0%), sensitivity 92.6%, specificity 87.6%, PPV 85.6%, ROC AUC 0.957. Cross-validated accuracy 89.0 +/- 1.5%.</p><p>Educational research project; not a medical device or diagnostic tool.</p>",
+  "license": "MIT",
+  "keywords": [
+    "skin cancer",
+    "melanoma",
+    "dermoscopy",
+    "deep learning",
+    "transfer learning",
+    "ResNet50",
+    "cross-validation",
+    "data leakage",
+    "medical image classification"
+  ],
+  "version": "v5.0"
+}
